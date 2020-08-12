@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Contract\NewsInterface;
 use App\Http\Requests\NewsRequest;
+use App\Mail\NewUserNotification;
 use App\News;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+
 
 class NewsController extends Controller
 {
@@ -15,6 +19,14 @@ class NewsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    private $newsInterface;
+
+    public function __construct(NewsInterface $NewsInterface)
+    {
+        $this->newsInterface = $NewsInterface;
+    }
+
     public function index()
     {
         $news = News::paginate(2);
@@ -27,6 +39,7 @@ class NewsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function create()
     {
         return view('news.createNews');
@@ -38,15 +51,12 @@ class NewsController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
+
     public function store(NewsRequest $request)
     {
         $id = Auth::id();
-        $task = News::create([
-            'name' => $request->name,
-            'user_id' => $id,
-            'short_description' => $request->short_description,
-            'news' => $request->news,
-        ]);
+        $request['user_id'] = $id;
+        $this->newsInterface->createNews($request);
         return redirect('/news/create')->with('message', 'Created successfully');
     }
 
@@ -56,11 +66,11 @@ class NewsController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
+
     public function show($id)
     {
         $news = News::findorfail($id);
         return view('news.show', compact('news'));
-
     }
 
     /**
@@ -71,7 +81,8 @@ class NewsController extends Controller
      */
     public function edit($id)
     {
-        $news = News::findorfail($id);
+        $news = $this->newsInterface->editNews($id);
+
         return view('news.edit', compact('news'));
     }
 
@@ -85,17 +96,14 @@ class NewsController extends Controller
 
     public function update(NewsRequest $request, $id)
     {
-        $news = News::findorfail($id);
-        $news->update($request->all());
+        $this->newsInterface->updateNews($request,$id);
         return redirect('/news');
     }
 
     public function hello()
     {
-        $a = News::with('user')->where('user_id', 1)->get();
-        // dd($a);
-        return view('news.hello', compact('a'));
-
+        $news = $this->newsInterface->getNews();
+        return view('news.hello', compact('news'));
     }
 
     /**
@@ -106,8 +114,9 @@ class NewsController extends Controller
      */
     public function destroy($id)
     {
-        $news = News::find($id);
-        $news->delete();
-        return view('news.createNews');
+//        $news = News::find($id);
+//        $news->delete();
+        $this->newsInterface->deleteNews($id);
+        return redirect('/news');
     }
 }

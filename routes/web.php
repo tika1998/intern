@@ -21,6 +21,8 @@ Auth::routes(['verify' => true]);
 
 Auth::routes();
 
+Route::get('/sendEmail', 'JobContoller@example');
+
 Route::get('/hello', 'NewsController@hello')->name('home');
 
 Route::resource('news', 'NewsController')->middleware('auth');

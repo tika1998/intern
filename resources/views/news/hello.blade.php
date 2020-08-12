@@ -2,7 +2,7 @@
 
 @section('content')
 
-@foreach($a as $i)
+@foreach($news as $i)
     <p style="color: #f8fafc">{{$i->name}}</p>
 @endforeach
 @endsection

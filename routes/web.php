@@ -19,12 +19,8 @@ Route::get('/', function () {
 
 Auth::routes(['verify' => true]);
 
-Auth::routes();
-
-Route::get('/sendEmail', 'JobContoller@example');
-
-Route::get('/hello', 'NewsController@hello')->name('home');
-
 Route::resource('news', 'NewsController')->middleware('auth');
-
-Route::get('/home', 'HomeController@index')->middleware('verified');
+Route::get('/sendEmail', 'JobController@enqueue');
+Route::get('/hello', 'NewsController@hello')->name('home');
+Route::get('/search', 'SearchController@search')->name('search');
+Route::get('/home', 'HomeController@index');

@@ -7,7 +7,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class EmailForQueuing extends Mailable
+class NewUserNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -31,6 +31,6 @@ class EmailForQueuing extends Mailable
     {
         return $this->from('mail@example.com', 'Mailtrap')
             ->subject('Test Queued Email')
-            ->view('mails.email');
+            ->view('email');
     }
 }

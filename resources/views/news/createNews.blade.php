@@ -16,7 +16,7 @@
     <form action="{{route('news.store')}}" class="col-5" method="post" id="createForm">
         @csrf
         <div class="form-group">
-            <input type="text" name="name" class="form-control" placeholder="Enter name" >
+            <input type="text" name="name" class="form-control" placeholder="Enter name">
         </div>
 
         <div class="form-group">

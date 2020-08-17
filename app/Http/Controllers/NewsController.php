@@ -43,6 +43,7 @@ class NewsController extends Controller
     public function create()
     {
         return view('news.createNews');
+
     }
 
     /**
@@ -56,8 +57,10 @@ class NewsController extends Controller
     {
         $id = Auth::id();
         $request['user_id'] = $id;
-        $this->newsInterface->createNews($request);
-        return redirect('/news/create')->with('message', 'Created successfully');
+        $news = $this->newsInterface->createNews($request);
+        return response()->json($news, 201);
+
+        //return redirect('/news/create')->with('message', 'Created successfully');
     }
 
     /**
@@ -74,7 +77,7 @@ class NewsController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified resource.getNews
      *
      * @param int $id
      * @return \Illuminate\Http\Response
@@ -112,6 +115,7 @@ class NewsController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
+
     public function destroy($id)
     {
 //        $news = News::find($id);

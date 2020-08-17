@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Contract\NewsInterface;
 use App\News;
+use Illuminate\Support\Facades\Auth;
 
 class NewsServices implements NewsInterface
 {
@@ -22,7 +23,24 @@ class NewsServices implements NewsInterface
     public function getNews()
     {
         // TODO: Implement getNews() method.
-        return $this->news::with('user')->where('user_id', 1)->get();
+        $id = Auth::id();
+//        $news = $this->news::with(['user'])->get();
+        $name = 'tik';
+//        $news = $this->news::whereHas('user',function ($query) use ($name){
+//            $query->where('email', 'Like','%'.$name.'%');
+//        })->with('user')->get();
+        $news = $this->news->join('user', function ($query) use ($name){
+            $query->on('email','Like','%'.$name.'%');
+        })->get();
+        $news = DB::table('news')->join('user', function ($query) use ($name){
+            $query->on('email','Like','%'.$name.'%');
+        })->get();
+        dd($news);
+        if (count($news) > 0) {
+            return $news;
+        } else {
+            return redirect('/news/hello')->with('message', 'you have no news yet');
+        }
     }
 
     public function updateNews($request, $id)
@@ -30,14 +48,21 @@ class NewsServices implements NewsInterface
         // TODO: Implement updateNews() method.
 
         $news = $this->news::findorfail($id);
-        return $news->update($request->all());
+        if (!$news) {
+            return abort(404);
+        } else {
+            return $news->update($request->all());
+        }
     }
 
     public function editNews($id)
     {
         // TODO: Implement editNews() method.
-
-        return $this->news::findorfail($id);
+        if (!$id) {
+            return abort(404);
+        } else {
+            return $this->news::findorfail($id);
+        }
     }
 
     public function createNews($request)
@@ -50,7 +75,11 @@ class NewsServices implements NewsInterface
     {
         // TODO: Implement deleteNews() method.
         $news = $this->news::find($id);
-        return $news->delete();
+        if (!$news) {
+            return abort(404);
+        } else {
+            return $news->delete();
+        }
     }
 
 }
